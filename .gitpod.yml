@@ -1,8 +1,24 @@
 tasks:
-  - init: mvn install -P quick-build
+  - init: |
+      mvn install -P quick-build
+      GIT_POD_URL=$(gp url 8080)
+      mkdir -p work/
+      cat <<EOF > work/jenkins.model.JenkinsLocationConfiguration.xml
+      <?xml version='1.1' encoding='UTF-8'?>
+      <jenkins.model.JenkinsLocationConfiguration>
+        <adminAddress>address not configured yet &lt;nobody@nowhere&gt;</adminAddress>
+        <jenkinsUrl>${GIT_POD_URL}/jenkins/</jenkinsUrl\>
+      </jenkins.model.JenkinsLocationConfiguration>
+      EOF
     command: mvn hpi:run
-  - command: gp await-port 8080 && gp url 8080 && gp preview $(gp url 8080)/jenkins
+  - command: gp await-port 8080 && gp url 8080 && gp preview $(gp url 8080)/jenkins/
 
 github:
   prebuilds:
     pullRequestsFromForks: true
+    addBadge: true
+
+jetbrains:
+  intellij:
+    plugins:
+      - Stapler plugin for IntelliJ IDEA
